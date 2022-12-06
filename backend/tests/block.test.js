@@ -101,7 +101,7 @@ describe('Block', () =>{
             })).toEqual(block.difficulty)
         })
 
-        it('increases difficulty when using the mineBlock function', () => {
+        it('decreases difficulty when mineBLock function executes slower than MINE_RATE', () => {
             block.difficulty = 6
             const minedBlock = Block.mineBlock({ lastBlock: block, data: "foo"})
             expect(minedBlock.difficulty).toEqual(5)

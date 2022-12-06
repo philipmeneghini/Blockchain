@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll",
-    "start": "node app.js"
+    "start": "redis-server --daemonize yes && node app.js"
   },
   "keywords": [],
   "author": "",
