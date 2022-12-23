@@ -1,7 +1,7 @@
-const Block = require('../block')
-const Blockchain = require('../blockchain')
+const Block = require('../blockchain/block')
+const Blockchain = require('../blockchain/chain')
 const { GENESIS_DATA, MINE_RATE } = require('../config')
-const cryptoHash = require('../cryptoHash')
+const cryptoHash = require('../util/cryptoHash')
 
 describe('Block', () =>{
     const timestamp = 2000

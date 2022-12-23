@@ -1,6 +1,6 @@
 const express = require('express')
-const Blockchain = require('../blockchain')
-const PubSub = require('../pubsub')
+const Blockchain = require('../blockchain/chain')
+const PubSub = require('../services/pubsub')
 
 class BlockchainController {
 

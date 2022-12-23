@@ -1,5 +1,5 @@
 const redis = require('redis')
-const Blockchain = require('./blockchain')
+const Blockchain = require('../blockchain/chain')
 
 const CHANNELS = {
     TEST: 'TEST',
@@ -41,15 +41,4 @@ class PubSub {
     }
 }
 
-// let blockchain = new Blockchain()
-// const test = new PubSub({ blockchain })
-// console.log("pubsub initialized")
-// blockchain.addBlock({ data: "foo-data"})
-// //test.publishToChannels({ channel: CHANNELS.BLOCKCHAIN, message: "foo-data" })
-// console.log(typeof JSON.stringify(blockchain))
-// test.publishToChannels({ channel: CHANNELS.BLOCKCHAIN, message: JSON.stringify(blockchain)})
-// console.log(test.blockchain)
-//test.broadcastChain(JSON.stringify(blockchain))
-//test.broadcastChain({ blockchain })
-//console.log("broadcasted chain")
 module.exports = PubSub
