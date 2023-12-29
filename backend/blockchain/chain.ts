@@ -1,23 +1,26 @@
-const Block = require('./block')
-const { GENESIS_DATA, MINE_RATE } = require('../config')
-const cryptoHash = require('../util/cryptoHash')
+import Block from'./block'
+import { BlockData, GENESIS_DATA, MINE_RATE } from '../config'
+import cryptoHash from '../util/cryptoHash'
+import { IChain } from './iChain'
 
-class Blockchain {
+class Blockchain implements IChain {
+
+    public chain: Block[]
 
     constructor() {
         this.chain = [Block.genesis()]
     }
 
-    addBlock({ data }) {
-        const newBlock = Block.mineBlock({
-            lastBlock: this.chain[this.chain.length-1],
+    addBlock = ( data: []) => {
+        const newBlock = Block.mineBlock(
+            this.chain[this.chain.length-1],
             data
-        })
+        )
 
         this.chain.push(newBlock)
     }
 
-    static isValidChain(chainOfBlockchain) {
+    static isValidChain = (chainOfBlockchain: Block[]): boolean => {
         if (JSON.stringify(chainOfBlockchain[0]) !== JSON.stringify(Block.genesis())) {
             return false
         }
@@ -26,7 +29,7 @@ class Blockchain {
                 return false
             }
 
-            const { timestamp, lastHash, hash, nonce, difficulty, data } = chainOfBlockchain[index]
+            const { timestamp, lastHash, hash, nonce, difficulty, data }: BlockData = chainOfBlockchain[index]
             
             if (Math.abs(difficulty - chainOfBlockchain[index-1].difficulty) >= 2) {
                 return false
@@ -40,7 +43,7 @@ class Blockchain {
         return true
     }
 
-    replaceChain(newChain) {
+    replaceChain = (newChain: Block[]) => {
         if (this.chain.length < newChain.length){
             if (Blockchain.isValidChain(newChain)) {
                 this.chain = newChain
@@ -49,4 +52,4 @@ class Blockchain {
     }
 }
 
-module.exports = Blockchain
+export default Blockchain
