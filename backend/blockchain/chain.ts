@@ -11,7 +11,7 @@ class Blockchain implements IChain {
         this.chain = [Block.genesis()]
     }
 
-    addBlock = ( data: []) => {
+    addBlock = ( data: string[] | string) => {
         const newBlock = Block.mineBlock(
             this.chain[this.chain.length-1],
             data

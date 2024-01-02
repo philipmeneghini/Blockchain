@@ -7,7 +7,7 @@ class Block {
     timestamp: number
     lastHash: string
     hash: string
-    data: []
+    data: string[] | string
     difficulty: number
     nonce: number
 
@@ -25,7 +25,7 @@ class Block {
         return genesisBlock
     }
 
-    static mineBlock = (lastBlock: Block, data: []): Block => {
+    static mineBlock = (lastBlock: Block, data: string[] | string): Block => {
         let timestamp = Date.now()
         const lastHash = lastBlock.hash
         let difficulty = lastBlock.difficulty

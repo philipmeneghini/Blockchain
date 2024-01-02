@@ -8,7 +8,7 @@ interface BlockData {
     hash: string
     difficulty: number
     nonce: number
-    data: []
+    data: string[] | string
 }
 
 const GENESIS_DATA: BlockData = {
