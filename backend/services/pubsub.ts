@@ -1,15 +1,26 @@
-const redis = require('redis')
-const Blockchain = require('../blockchain/chain')
+import redis from 'redis'
+import { IChain } from '../blockchain/iChain'
+import { IPubSub } from './iPubSub'
 
-const CHANNELS = {
+interface IChannels {
+    TEST: string
+    BLOCKCHAIN: string
+}
+
+const CHANNELS: IChannels = {
     TEST: 'TEST',
     BLOCKCHAIN: 'BLOCKCHAIN'
 }
 
-class PubSub {
+class PubSub implements IPubSub {
 
-    constructor({ blockchain }) {
-        this.blockchain = blockchain
+    blockchain: IChain
+    publisher: any
+    subscriber: any
+
+
+    constructor(chain: IChain) {
+        this.blockchain = chain
         this.publisher = redis.createClient()
         this.subscriber = redis.createClient()
 
@@ -18,27 +29,27 @@ class PubSub {
     }
 
 
-    subscribeToChannels = (subscriber) => {
+    subscribeToChannels = (subscriber: any) => {
         Object.entries(CHANNELS).forEach(channel => {
-            subscriber.subscribe(channel, (message) => {
+            subscriber.subscribe(channel, (message: any) => {
                 console.log('Channel: ' + channel + '\nRecieved data: '+ message)
                 const parsedMessage = JSON.parse(message)
 
-                if(channel === CHANNELS.BLOCKCHAIN) {
+                if(channel[0] === CHANNELS.BLOCKCHAIN) {
                     this.blockchain.replaceChain(parsedMessage)
                 }
             })
         })
     }
 
-    publishToChannels = async({ channel, message }) => {
+    publishToChannels = async(channel: string, message: any) => {
         await this.publisher.publish(channel, message)
     }
 
-    connectClient = async(publisher, subscriber) => {
+    connectClient = async(publisher: any, subscriber: any) => {
         await publisher.connect()
         await subscriber.connect()
     }
 }
 
-module.exports = PubSub
+export default PubSub
