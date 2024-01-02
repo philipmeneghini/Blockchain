@@ -1,9 +1,10 @@
-const Blockchain = require('../blockchain/chain')
-const Block = require('../blockchain/block')
-const cryptoHash = require('../util/cryptoHash')
+import Blockchain from '../blockchain/chain'
+import Block from '../blockchain/block'
+import cryptoHash from '../util/cryptoHash'
+import { IChain } from '../blockchain/iChain'
 
 describe('Blockchain', () => {
-    let blockchain, newChain, originalChain
+    let blockchain: IChain, newChain: IChain, originalChain: Block[]
 
 
     beforeEach(() => {
@@ -21,20 +22,20 @@ describe('Blockchain', () => {
 
     it('adds a new block to the chain', () => {
         const newData = 'foo bar'
-        blockchain.addBlock({ data: newData })
+        blockchain.addBlock(newData)
 
         expect(blockchain.chain[blockchain.chain.length-1].data).toEqual(newData)
     })
 
     describe('isValidChain()', () => {
         beforeEach(() => {
-            blockchain.addBlock({ data : 'Bears'})
-            blockchain.addBlock({ data : 'racoon'})
-            blockchain.addBlock({ data : 'rabbits' })
+            blockchain.addBlock('Bears')
+            blockchain.addBlock('racoon')
+            blockchain.addBlock('rabbits')
         })
         describe('when the chain does not start with the genesis block', () => {
             it('returns false', () => {
-                blockchain.chain[0] = { data : 'fake-genesis'}
+                blockchain.chain[0] = { timestamp: 0, lastHash: '', hash: '', data : 'fake-genesis', difficulty: 0, nonce: 0}
 
                 expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
             })
@@ -62,7 +63,7 @@ describe('Blockchain', () => {
                     const lastHash = lastBlock.hash
                     const timestamp = Date.now()
                     const nonce = 0
-                    const data = []
+                    const data = ['']
                     const difficulty = lastBlock.difficulty -3
                     const hash = cryptoHash(timestamp, lastHash, difficulty, nonce, data)
                     const badBlock = new Block({
@@ -87,7 +88,7 @@ describe('Blockchain', () => {
     describe('replaceChain()', () => {
         describe('When the chain is not longer', () => {
             it('does not replace the chain', () => {
-                newChain.chain[0] = { new: 'chain' }
+                newChain.chain[0] = { timestamp: 0, lastHash: '', hash: '', data : 'fake-genesis', difficulty: 0, nonce: 0}
 
                 blockchain.replaceChain(newChain.chain)
 
@@ -95,9 +96,9 @@ describe('Blockchain', () => {
             })
         describe('When the chain is longer', () => {
             beforeEach(() => {
-                newChain.addBlock({ data: 'Bears' })
-                newChain.addBlock({ data : 'racoons' })
-                newChain.addBlock({ data : 'chipmunks' })
+                newChain.addBlock('Bears')
+                newChain.addBlock('racoons')
+                newChain.addBlock('chipmunks')
             })
             describe('When the chain is invalid', () => {
                 it('does not replace the chain', () => {

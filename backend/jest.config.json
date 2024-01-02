@@ -1,0 +1,9 @@
+{
+    "preset": "ts-jest",
+    "testMatch": [
+    "**/?(*.)+(spec|test).ts"
+    ],
+    "testPathIgnorePatterns": [
+     "\\node_modules\\"
+    ]
+}

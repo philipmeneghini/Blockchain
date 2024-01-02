@@ -1,17 +1,17 @@
-const Transaction = require('../wallet/transaction')
-const Wallet = require('../wallet')
-const cryptoHash = require('../util/cryptoHash')
-const { ec, verifySignature } = require('../util/ECC')
+import Transaction from '../wallet/transaction'
+import Wallet from '../wallet'
+import cryptoHash from '../util/cryptoHash'
+import { ec, verifySignature } from '../util/ECC'
 
 describe('Transaction', () => {
-    let transaction, senderWallet, recipient, amount
+    let transaction: Transaction, senderWallet: Wallet, recipient: string, amount: number
 
     beforeEach(() => {
         senderWallet = new Wallet()
         recipient = 'recipient-public-key'
         amount = 5
 
-        transaction = new Transaction({ senderWallet, recipient, amount })
+        transaction = new Transaction(senderWallet, recipient, amount)
     })
 
     it('has an `id`', () => {
@@ -19,14 +19,14 @@ describe('Transaction', () => {
     })
 
     describe('outputMap', () => {
-        let transaction, senderWallet, recipient, amount
+        let transaction: Transaction, senderWallet: Wallet, recipient: string, amount: number
 
         beforeEach(() => {
             senderWallet = new Wallet()
             recipient = 'recipient-public-key'
             amount = 5
 
-            transaction = new Transaction({ senderWallet, recipient, amount })
+            transaction = new Transaction(senderWallet, recipient, amount)
         })
 
         it('has an output map', () => {
@@ -45,14 +45,14 @@ describe('Transaction', () => {
     })
 
     describe('input', () => {
-        let transaction, senderWallet, recipient, amount
+        let transaction: Transaction, senderWallet: Wallet, recipient: string, amount: number
 
         beforeEach(() => {
             senderWallet = new Wallet()
             recipient = 'recipient-public-key'
             amount = 5
 
-            transaction = new Transaction({ senderWallet, recipient, amount })
+            transaction = new Transaction(senderWallet, recipient, amount)
         })
 
         it('has an input', () => {
@@ -72,11 +72,11 @@ describe('Transaction', () => {
         })
 
         it('signs the input', () => {
-            expect(verifySignature({
-                publicKey: transaction.input.address,
-                data: JSON.stringify(transaction.outputMap),
-                signature: transaction.input.signature
-            })).toBe(true)
+            expect(verifySignature(
+                transaction.input.address,
+                JSON.stringify(transaction.outputMap),
+                transaction.input.signature
+            )).toBe(true)
         })
     })
 
@@ -86,14 +86,14 @@ describe('Transaction', () => {
             recipient = 'recipient-public-key'
             amount = 5
     
-            transaction = new Transaction({ senderWallet, recipient, amount })
+            transaction = new Transaction(senderWallet, recipient, amount)
         })
         describe('when the transaction is valid', () => {
             senderWallet = new Wallet()
             recipient = 'recipient-public-key'
             amount = 5
     
-            transaction = new Transaction({ senderWallet, recipient, amount })
+            transaction = new Transaction(senderWallet, recipient, amount)
             it('returns true', () => {
                 expect(Transaction.validTransaction(transaction)).toBe(true)
             })
@@ -105,7 +105,7 @@ describe('Transaction', () => {
                 recipient = 'recipient-public-key'
                 amount = 5
     
-                transaction = new Transaction({ senderWallet, recipient, amount })
+                transaction = new Transaction(senderWallet, recipient, amount)
                 it('returns false', () => {
                     transaction.outputMap['recipient-public-key'] = 95
                     transaction.outputMap[senderWallet.publicKey] = 99999
@@ -123,7 +123,7 @@ describe('Transaction', () => {
                 recipient = 'recipient-public-key'
                 amount = 5
     
-                transaction = new Transaction({ senderWallet, recipient, amount })
+                transaction = new Transaction(senderWallet, recipient, amount)
                 it('returns false', () => {
                     transaction.input.signature = new Wallet().sign('data')
                     expect(Transaction.validTransaction(transaction)).toBe(false)

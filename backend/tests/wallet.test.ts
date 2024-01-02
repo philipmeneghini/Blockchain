@@ -1,10 +1,10 @@
-const Wallet = require('../wallet')
-const { verifySignature } = require('../util/ECC')
-const { STARTING_BALANCE } = require('../config')
-const Transaction = require('../wallet/transaction')
+import Wallet from '../wallet'
+import { verifySignature } from '../util/ECC'
+import { STARTING_BALANCE } from '../config'
+import Transaction from '../wallet/transaction'
 
 describe('Wallet', () => {
-    let wallet
+    let wallet: Wallet
     beforeEach(() => {
         wallet = new Wallet()
     })
@@ -23,7 +23,7 @@ describe('Wallet', () => {
 
     describe('signing data', () => {
         const data = 'foo-data'
-        let wallet
+        let wallet: Wallet
 
         beforeEach(() => {
             wallet = new Wallet()
@@ -31,21 +31,21 @@ describe('Wallet', () => {
 
         it('verifies a signature', () => {
             expect(
-                verifySignature({
-                    publicKey: wallet.publicKey,
+                verifySignature(
+                    wallet.publicKey,
                     data,
-                    signature: wallet.sign(data)
-                })
+                    wallet.sign(data)
+                )
             ).toBe(true)
         })
 
         it('does not verify a signature', () => {
             expect(
-                verifySignature({
-                    publicKey: wallet.publicKey,
+                verifySignature(
+                    wallet.publicKey,
                     data,
-                    signature: new Wallet().sign(data)
-                })
+                    new Wallet().sign(data)
+                )
             ).toBe(false)
         })
     })
@@ -53,13 +53,13 @@ describe('Wallet', () => {
     describe('createTransaction()', () => {
         describe('and the amount exceeds the balance', () => {
             it('throws an error', () => {
-                expect(() => wallet.createTransaction({amount: 999999, recipient: 'foo-recipient'}))
+                expect(() => wallet.createTransaction(999999, 'foo-recipient'))
                 .toThrow('Amount exceeds balance')
             })
         })
 
         describe('and the amount is valid', () => {
-            let transaction, amount, recipient
+            let transaction: Transaction, amount: number, recipient: string
 
             beforeEach(() => {
                 amount = 5
@@ -69,19 +69,19 @@ describe('Wallet', () => {
             
             it('creates an instance of `Transaction`', () => {
                 wallet = new Wallet()
-                transaction = wallet.createTransaction({ amount, recipient })
+                transaction = wallet.createTransaction(amount, recipient)
                 expect(transaction instanceof Transaction).toBe(true)
             })
 
             it('matches the transaction input with the wallet', () => {
                 wallet = new Wallet()
-                transaction = wallet.createTransaction({ amount, recipient })
+                transaction = wallet.createTransaction(amount, recipient)
                 expect(transaction.input.address).toEqual(wallet.publicKey)
             })
 
             it('output the amount to the recipient', () => {
                 wallet = new Wallet()
-                transaction = wallet.createTransaction({ amount, recipient })
+                transaction = wallet.createTransaction(amount, recipient)
                 expect(transaction.outputMap[recipient]).toEqual(amount)
             })
         })

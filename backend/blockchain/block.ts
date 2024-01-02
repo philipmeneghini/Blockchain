@@ -1,24 +1,31 @@
-const { GENESIS_DATA, MINE_RATE } = require('../config')
-const cryptoHash = require('../util/cryptoHash')
+import { BlockData, GENESIS_DATA, MINE_RATE } from '../config'
+import cryptoHash from '../util/cryptoHash'
 
 
 class Block {
 
-    constructor({ timestamp, lastHash, hash, data, difficulty, nonce }) {
-        this.timestamp = timestamp
-        this.lastHash = lastHash
-        this.hash = hash
-        this.data = data
-        this.difficulty = difficulty
-        this.nonce = nonce      
+    timestamp: number
+    lastHash: string
+    hash: string
+    data: string[] | string
+    difficulty: number
+    nonce: number
+
+    constructor(blockData: BlockData) {
+        this.timestamp = blockData.timestamp
+        this.lastHash = blockData.lastHash
+        this.hash = blockData.hash
+        this.data = blockData.data
+        this.difficulty = blockData.difficulty
+        this.nonce = blockData.nonce      
     }
 
-    static genesis() {
+    static genesis = (): Block => {
         const genesisBlock = new Block(GENESIS_DATA)
         return genesisBlock
     }
 
-    static mineBlock({lastBlock, data}) {
+    static mineBlock = (lastBlock: Block, data: string[] | string): Block => {
         let timestamp = Date.now()
         const lastHash = lastBlock.hash
         let difficulty = lastBlock.difficulty
@@ -27,7 +34,7 @@ class Block {
         while(hash.substring(0, difficulty) !== '0'.repeat(difficulty)) {
             nonce ++
             timestamp = Date.now()
-            difficulty = Block.adjustDifficulty({ originalBlock: lastBlock, timestamp })
+            difficulty = Block.adjustDifficulty(lastBlock, timestamp)
             hash = cryptoHash(timestamp, lastHash, data, difficulty, nonce)
         }
         const minedBlock = new this({
@@ -41,7 +48,7 @@ class Block {
         return minedBlock
     }
 
-    static adjustDifficulty({ originalBlock, timestamp }) {
+    static adjustDifficulty( originalBlock: Block, timestamp: number ): number {
         const { difficulty } = originalBlock
         const difference = timestamp - originalBlock.timestamp
         if (difference > MINE_RATE) {
@@ -58,4 +65,4 @@ class Block {
 
 }
 
-module.exports = Block
+export default Block
